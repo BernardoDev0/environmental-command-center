@@ -5,9 +5,9 @@ const CollaboratorLayout = () => {
 
   return (
     <main className="p-6">
-      <section className="space-y-4">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Perfil do Colaborador</h1>
+      <section className="space-y-5">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight">Perfil do Colaborador</h1>
           <p className="text-sm text-muted-foreground">
             Visualize detalhes, equipamentos em posse, objetivos e histórico do colaborador selecionado.
           </p>

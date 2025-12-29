@@ -5,9 +5,9 @@ const ProjectLayout = () => {
 
   return (
     <main className="p-6">
-      <section className="space-y-4">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Projeto</h1>
+      <section className="space-y-5">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight">Projeto</h1>
           <p className="text-sm text-muted-foreground">
             Acompanhe visão geral, objetivos, requisitos e documentos do projeto selecionado.
           </p>

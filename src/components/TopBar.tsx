@@ -11,11 +11,11 @@ export const TopBar = () => {
 
   useEffect(() => {
     const titles: Record<string, string> = {
-      "/": "Visão geral",
-      "/inventory": "Inventário & Equipamentos",
-      "/projects": "Projetos & Operações",
-      "/goals": "Metas e Objetivos",
-      "/finance": "Finanças & Contratos",
+      "/": "Dashboard",
+      "/inventory": "Estoque & Equipamentos",
+      "/projects": "Operações – Projetos",
+      "/goals": "Compliance & ESG",
+      "/finance": "Financeiro & Contratos",
     };
     document.title = `${titles[location.pathname] || "Aplicação"} – Plataforma Ambiental`;
   }, [location.pathname]);
@@ -38,19 +38,19 @@ export const TopBar = () => {
 
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur">
-      <SidebarTrigger aria-label="Toggle sidebar" />
+      <SidebarTrigger aria-label="Alternar barra lateral" />
       <div className="flex flex-1 items-center justify-between gap-4">
         <h1 className="text-lg font-semibold tracking-tight">
           {location.pathname === "/"
-            ? "Visão geral"
+            ? "Dashboard"
             : location.pathname === "/inventory"
-              ? "Inventário & Equipamentos"
+              ? "Estoque & Equipamentos"
               : location.pathname === "/projects"
-                ? "Projetos & Operações"
+                ? "Operações – Projetos"
                 : location.pathname === "/goals"
-                  ? "Metas e Objetivos"
+                  ? "Compliance & ESG"
                   : location.pathname === "/finance"
-                    ? "Finanças & Contratos"
+                    ? "Financeiro & Contratos"
                     : "Plataforma"}
         </h1>
         <div className="flex items-center gap-3">

@@ -1,13 +1,11 @@
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 export const TopBar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const titles: Record<string, string> = {
@@ -19,22 +17,6 @@ export const TopBar = () => {
     };
     document.title = `${titles[location.pathname] || "Aplicação"} – Plataforma Ambiental`;
   }, [location.pathname]);
-
-  const toggleTheme = () => {
-    const root = document.documentElement;
-    if (root.classList.contains("dark")) {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    } else {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    navigate("/login");
-  };
 
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur">
@@ -58,13 +40,6 @@ export const TopBar = () => {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input className="h-9 pl-9" placeholder="Buscar" />
           </div>
-          <Button variant="outline" size="icon" onClick={toggleTheme} aria-label="Alternar tema">
-            <Moon className="h-4 w-4 dark:hidden" />
-            <Sun className="hidden h-4 w-4 dark:block" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            Sair
-          </Button>
         </div>
       </div>
     </header>

@@ -56,16 +56,16 @@ export function AppSidebar() {
     <Sidebar
       variant="floating"
       collapsible="icon"
-      className="border-border/40 bg-sidebar/95 shadow-lg shadow-black/40"
+      className="border border-sidebar-border/60 bg-sidebar/95 shadow-lg shadow-black/40"
     >
-      <SidebarHeader className="flex items-center gap-3 px-4 py-3">
+      <SidebarHeader className="flex items-center gap-3 px-4 py-4">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/90 shadow-md shadow-primary/40">
           <div className="h-5 w-5 rounded-lg border border-primary-foreground/40 bg-background/80" />
         </div>
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">Plataforma Ambiental</span>
-            <span className="text-xs text-sidebar-foreground/60">Painel de Operações</span>
+            <span className="text-base font-semibold tracking-tight text-sidebar-foreground">Plataforma Ambiental</span>
+            <span className="text-xs text-sidebar-foreground/70">Painel de Operações</span>
           </div>
         )}
       </SidebarHeader>
@@ -78,7 +78,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={currentPath === "/"}>
                   <NavLink to="/" end className="flex items-center gap-2" activeClassName="font-semibold">
-                    <LayoutGrid className="h-4 w-4" />
+                    {collapsed && <LayoutGrid className="h-5 w-5" />}
                     {!collapsed && <span>Dashboard</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -89,7 +89,7 @@ export function AppSidebar() {
                 <div className="flex items-center justify-between gap-1">
                   <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1">
                     <NavLink to="/colaboradores" className="flex items-center gap-2" activeClassName="font-semibold">
-                      <Users className="h-4 w-4" />
+                      {collapsed && <Users className="h-5 w-5" />}
                       {!collapsed && <span>Pessoas</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -105,7 +105,7 @@ export function AppSidebar() {
                     >
                       <ChevronDown
                         className={cn(
-                          "h-3 w-3 transform transition-transform",
+                          "h-3 w-3 transform text-sidebar-foreground/70 transition-transform duration-300 ease-out",
                           openSection === "pessoas" ? "rotate-180" : "rotate-0",
                         )}
                       />
@@ -116,7 +116,6 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     <SidebarMenuSubButton asChild isActive={currentPath === "/colaboradores"}>
                       <NavLink to="/colaboradores" className="flex items-center gap-2">
-                        <UserRound className="h-4 w-4" />
                         <span>Lista de Colaboradores</span>
                       </NavLink>
                     </SidebarMenuSubButton>
@@ -126,7 +125,6 @@ export function AppSidebar() {
                       className="mt-1"
                     >
                       <NavLink to="/colaboradores/1" className="flex items-center gap-2">
-                        <UserRound className="h-4 w-4" />
                         <span>Perfil do Colaborador</span>
                       </NavLink>
                     </SidebarMenuSubButton>
@@ -156,7 +154,7 @@ export function AppSidebar() {
                 <div className="flex items-center justify-between gap-1">
                   <SidebarMenuButton asChild isActive={isProjectsRoute} className="flex-1">
                     <NavLink to="/projetos" className="flex items-center gap-2" activeClassName="font-semibold">
-                      <ClipboardList className="h-4 w-4" />
+                      {collapsed && <ClipboardList className="h-5 w-5" />}
                       {!collapsed && <span>Operações</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -172,7 +170,7 @@ export function AppSidebar() {
                     >
                       <ChevronDown
                         className={cn(
-                          "h-3 w-3 transform transition-transform",
+                          "h-3 w-3 transform text-sidebar-foreground/70 transition-transform duration-300 ease-out",
                           openSection === "operacoes" ? "rotate-180" : "rotate-0",
                         )}
                       />
@@ -222,7 +220,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isInventoryRoute}>
                   <NavLink to="/inventory" className="flex items-center gap-2" activeClassName="font-semibold">
-                    <Package className="h-4 w-4" />
+                    {collapsed && <Package className="h-5 w-5" />}
                     {!collapsed && <span>Estoque &amp; Equipamentos</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -232,7 +230,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isFinanceRoute}>
                   <NavLink to="/finance" className="flex items-center gap-2" activeClassName="font-semibold">
-                    <TrendingUp className="h-4 w-4" />
+                    {collapsed && <TrendingUp className="h-5 w-5" />}
                     {!collapsed && <span>Financeiro &amp; Contratos</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -242,7 +240,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isComplianceRoute}>
                   <NavLink to="/goals" className="flex items-center gap-2" activeClassName="font-semibold">
-                    <ShieldCheck className="h-4 w-4" />
+                    {collapsed && <ShieldCheck className="h-5 w-5" />}
                     {!collapsed && <span>Compliance &amp; ESG</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -252,7 +250,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton type="button" className="justify-start">
                   <span className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
+                    {collapsed && <Settings className="h-5 w-5" />}
                     {!collapsed && <span>Administração</span>}
                   </span>
                 </SidebarMenuButton>

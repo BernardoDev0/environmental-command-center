@@ -23,45 +23,111 @@ import ProjectOverview from "./pages/projects/ProjectOverview";
 import ProjectGoals from "./pages/projects/ProjectGoals";
 import ProjectRequirements from "./pages/projects/ProjectRequirements";
 import ProjectDocuments from "./pages/projects/ProjectDocuments";
- 
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const queryClient = new QueryClient();
- 
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<DashboardLayout />}>
-            <Route index element={<Index />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/finance" element={<Finance />} />
-            {/* Pessoas */}
-            <Route path="/colaboradores" element={<Collaborators />} />
-            <Route path="/colaboradores/:id" element={<CollaboratorLayout />}>
-              <Route index element={<CollaboratorOverview />} />
-              <Route path="equipamentos" element={<CollaboratorEquipments />} />
-              <Route path="objetivos" element={<CollaboratorGoals />} />
-              <Route path="historico" element={<CollaboratorHistory />} />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Index />} />
+              <Route
+                path="/inventory"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <Inventory />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/projects"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <Projects />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/goals"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <Goals />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/finance"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <Finance />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Pessoas */}
+              <Route
+                path="/colaboradores"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <Collaborators />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/colaboradores/:id"
+                element={
+                  <ProtectedRoute>
+                    <CollaboratorLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<CollaboratorOverview />} />
+                <Route path="equipamentos" element={<CollaboratorEquipments />} />
+                <Route path="objetivos" element={<CollaboratorGoals />} />
+                <Route path="historico" element={<CollaboratorHistory />} />
+              </Route>
+              {/* Operações / Projetos */}
+              <Route
+                path="/projetos"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <ProjectsList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/projetos/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER", "USER"]}>
+                    <ProjectLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<ProjectOverview />} />
+                <Route path="objetivos" element={<ProjectGoals />} />
+                <Route path="requisitos" element={<ProjectRequirements />} />
+                <Route path="documentos" element={<ProjectDocuments />} />
+              </Route>
             </Route>
-            {/* Operações / Projetos */}
-            <Route path="/projetos" element={<ProjectsList />} />
-            <Route path="/projetos/:id" element={<ProjectLayout />}>
-              <Route index element={<ProjectOverview />} />
-              <Route path="objetivos" element={<ProjectGoals />} />
-              <Route path="requisitos" element={<ProjectRequirements />} />
-              <Route path="documentos" element={<ProjectDocuments />} />
-            </Route>
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
- 
+
 export default App;

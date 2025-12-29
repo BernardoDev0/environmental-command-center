@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import authRouter from "./routes/auth";
+import collaboratorsRouter from "./routes/collaborators";
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+app.use("/api/collaborators", collaboratorsRouter);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });

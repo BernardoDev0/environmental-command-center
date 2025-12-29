@@ -78,3 +78,18 @@ model Invoice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum CollaboratorStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Collaborator {
+  id        String             @id @default(cuid())
+  name      String
+  email     String             @unique
+  role      String
+  status    CollaboratorStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}

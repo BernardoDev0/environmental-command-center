@@ -21,10 +21,10 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.message || "Credenciais inválidas");
-        }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Credenciais inválidas");
+      }
       const data = await res.json();
       localStorage.setItem("auth_token", data.token);
       navigate("/");

@@ -18,18 +18,18 @@ router.post("/login", async (req, res) => {
   try {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ message: "Invalid input" });
+      return res.status(400).json({ message: "Dados inválidos" });
     }
 
     const { email, password } = parsed.data;
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Credenciais inválidas" });
     }
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Credenciais inválidas" });
     }
 
     const token = jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: "8h" });
@@ -46,14 +46,20 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Erro interno ao autenticar" });
   }
+});
+
+router.post("/logout", (_req, res) => {
+  // JWT é stateless; o logout é tratado no cliente removendo o token.
+  // Este endpoint existe apenas para padronização da API.
+  return res.status(200).json({ message: "Logout realizado" });
 });
 
 router.get("/me", async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Não autenticado" });
   }
 
   const token = authHeader.slice(7);
@@ -61,7 +67,7 @@ router.get("/me", async (req, res) => {
     const payload = jwt.verify(token, JWT_SECRET) as { sub: string };
     const user = await prisma.user.findUnique({ where: { id: payload.sub } });
     if (!user) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Não autenticado" });
     }
 
     return res.json({
@@ -73,7 +79,7 @@ router.get("/me", async (req, res) => {
     });
   } catch (error) {
     console.error("/me error", error);
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Não autenticado" });
   }
 });
 

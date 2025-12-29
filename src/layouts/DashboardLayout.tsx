@@ -12,7 +12,7 @@ const DashboardLayout = () => {
         <AppSidebar />
         <div className="flex min-h-full flex-1 flex-col">
           <TopBar />
-          <main className="flex-1 rounded-2xl bg-card/40 p-6 shadow-sm">
+          <main className="flex-1 rounded-2xl bg-card/90 p-6 shadow-lg shadow-black/40">
             <Outlet key={location.pathname} />
           </main>
         </div>

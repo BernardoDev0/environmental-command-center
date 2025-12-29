@@ -25,6 +25,7 @@ import ProjectRequirements from "./pages/projects/ProjectRequirements";
 import ProjectDocuments from "./pages/projects/ProjectDocuments";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RoleBasedRedirect from "./components/RoleBasedRedirect";
 
 const queryClient = new QueryClient();
 
@@ -44,11 +45,27 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Index />} />
+              {/* Redireciona automaticamente para o dashboard correto com base no papel */}
+              <Route index element={<RoleBasedRedirect />} />
+
+              {/* Dashboard pessoal (rota compartilhada entre papéis, conteúdo pode variar) */}
+              <Route path="/dashboard" element={<Index />} />
+
+              {/* Dashboard administrativo - apenas ADMIN / OPERATIONS_MANAGER */}
+              <Route
+                path="/dashboard/admin"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <Index />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Outras rotas protegidas */}
               <Route
                 path="/inventory"
                 element={
-                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER", "USER"]}>
                     <Inventory />
                   </ProtectedRoute>
                 }
@@ -56,7 +73,7 @@ const App = () => (
               <Route
                 path="/projects"
                 element={
-                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER", "USER"]}>
                     <Projects />
                   </ProtectedRoute>
                 }
@@ -103,7 +120,7 @@ const App = () => (
               <Route
                 path="/projetos"
                 element={
-                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER", "USER"]}>
                     <ProjectsList />
                   </ProtectedRoute>
                 }

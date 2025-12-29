@@ -16,6 +16,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -42,6 +43,13 @@ export function AppSidebar() {
   const [isDark, setIsDark] = useState(true as boolean);
 
   const currentPath = location.pathname;
+
+  const { user } = useAuth();
+  const isAdminOrOps = user?.role === "ADMIN" || user?.role === "OPERATIONS_MANAGER";
+
+  const dashboardPath = !user ? "/" : user.role === "USER" ? "/dashboard" : "/dashboard/admin";
+  const isDashboardRoute =
+    currentPath === "/" || currentPath === "/dashboard" || currentPath === "/dashboard/admin";
 
   useEffect(() => {
     const root = document.documentElement;
@@ -114,9 +122,9 @@ export function AppSidebar() {
             <SidebarMenu>
               {/* Dashboard */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={currentPath === "/"} tooltip="Dashboard">
+                <SidebarMenuButton asChild isActive={isDashboardRoute} tooltip="Dashboard">
                   <NavLink
-                    to="/"
+                    to={dashboardPath}
                     end
                     className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                     activeClassName="font-semibold"
@@ -161,11 +169,13 @@ export function AppSidebar() {
                 </div>
                 {!collapsed && openSection === "pessoas" && (
                   <SidebarMenuSub>
-                    <SidebarMenuSubButton asChild isActive={currentPath === "/colaboradores"}>
-                      <NavLink to="/colaboradores" className="flex items-center gap-2">
-                        <span>Lista de Colaboradores</span>
-                      </NavLink>
-                    </SidebarMenuSubButton>
+                    {isAdminOrOps && (
+                      <SidebarMenuSubButton asChild isActive={currentPath === "/colaboradores"}>
+                        <NavLink to="/colaboradores" className="flex items-center gap-2">
+                          <span>Lista de Colaboradores</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                    )}
                     <SidebarMenuSubButton
                       asChild
                       isActive={currentPath.startsWith("/colaboradores/")}
@@ -282,42 +292,48 @@ export function AppSidebar() {
               </SidebarMenuItem>
 
               {/* Financeiro & Contratos */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isFinanceRoute} tooltip="Financeiro &amp; Contratos">
-                  <NavLink
-                    to="/finance"
-                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                    activeClassName="font-semibold"
-                  >
-                    <TrendingUp className="h-5 w-5" />
-                    {!collapsed && <span>Financeiro &amp; Contratos</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {isAdminOrOps && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isFinanceRoute} tooltip="Financeiro &amp; Contratos">
+                    <NavLink
+                      to="/finance"
+                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="font-semibold"
+                    >
+                      <TrendingUp className="h-5 w-5" />
+                      {!collapsed && <span>Financeiro &amp; Contratos</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
 
               {/* Compliance & ESG */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isComplianceRoute} tooltip="Compliance &amp; ESG">
-                  <NavLink
-                    to="/goals"
-                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                    activeClassName="font-semibold"
-                  >
-                    <ShieldCheck className="h-5 w-5" />
-                    {!collapsed && <span>Compliance &amp; ESG</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {isAdminOrOps && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isComplianceRoute} tooltip="Compliance &amp; ESG">
+                    <NavLink
+                      to="/goals"
+                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="font-semibold"
+                    >
+                      <ShieldCheck className="h-5 w-5" />
+                      {!collapsed && <span>Compliance &amp; ESG</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
 
               {/* Administração */}
-              <SidebarMenuItem>
-                <SidebarMenuButton type="button" className="justify-start" tooltip="Administração">
-                  <span className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    {!collapsed && <span>Administração</span>}
-                  </span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {isAdminOrOps && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton type="button" className="justify-start" tooltip="Administração">
+                    <span className="flex items-center gap-2">
+                      <Settings className="h-5 w-5" />
+                      {!collapsed && <span>Administração</span>}
+                    </span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

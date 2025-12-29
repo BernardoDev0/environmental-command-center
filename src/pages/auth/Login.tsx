@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { refresh } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,16 @@ const Login = () => {
       }
       const data = await res.json();
       localStorage.setItem("auth_token", data.token);
-      navigate("/");
+
+      // Garante que o contexto de autenticação esteja sincronizado (chama GET /auth/me)
+      await refresh();
+
+      const role = data.user?.role as "ADMIN" | "OPERATIONS_MANAGER" | "USER" | undefined;
+      if (role === "ADMIN" || role === "OPERATIONS_MANAGER") {
+        navigate("/dashboard/admin", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (err: any) {
       setError(err.message || "Falha no login");
     } finally {
@@ -64,3 +75,4 @@ const Login = () => {
 };
 
 export default Login;
+

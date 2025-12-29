@@ -11,9 +11,21 @@ import Inventory from "./pages/inventory/Inventory";
 import Projects from "./pages/projects/Projects";
 import Goals from "./pages/goals/Goals";
 import Finance from "./pages/finance/Finance";
-
+import Collaborators from "./pages/people/Collaborators";
+import CollaboratorLayout from "./pages/people/CollaboratorLayout";
+import CollaboratorOverview from "./pages/people/CollaboratorOverview";
+import CollaboratorEquipments from "./pages/people/CollaboratorEquipments";
+import CollaboratorGoals from "./pages/people/CollaboratorGoals";
+import CollaboratorHistory from "./pages/people/CollaboratorHistory";
+import ProjectsList from "./pages/projects/ProjectsList";
+import ProjectLayout from "./pages/projects/ProjectLayout";
+import ProjectOverview from "./pages/projects/ProjectOverview";
+import ProjectGoals from "./pages/projects/ProjectGoals";
+import ProjectRequirements from "./pages/projects/ProjectRequirements";
+import ProjectDocuments from "./pages/projects/ProjectDocuments";
+ 
 const queryClient = new QueryClient();
-
+ 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -28,6 +40,22 @@ const App = () => (
             <Route path="/projects" element={<Projects />} />
             <Route path="/goals" element={<Goals />} />
             <Route path="/finance" element={<Finance />} />
+            {/* Pessoas */}
+            <Route path="/colaboradores" element={<Collaborators />} />
+            <Route path="/colaboradores/:id" element={<CollaboratorLayout />}>
+              <Route index element={<CollaboratorOverview />} />
+              <Route path="equipamentos" element={<CollaboratorEquipments />} />
+              <Route path="objetivos" element={<CollaboratorGoals />} />
+              <Route path="historico" element={<CollaboratorHistory />} />
+            </Route>
+            {/* Operações / Projetos */}
+            <Route path="/projetos" element={<ProjectsList />} />
+            <Route path="/projetos/:id" element={<ProjectLayout />}>
+              <Route index element={<ProjectOverview />} />
+              <Route path="objetivos" element={<ProjectGoals />} />
+              <Route path="requisitos" element={<ProjectRequirements />} />
+              <Route path="documentos" element={<ProjectDocuments />} />
+            </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -35,5 +63,5 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
+ 
 export default App;

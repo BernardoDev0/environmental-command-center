@@ -36,16 +36,17 @@ export function AppSidebar() {
 
   const currentPath = location.pathname;
 
-  const isProjectsRoute = currentPath === "/projects";
+  const isCollaboratorsRoute = currentPath.startsWith("/colaboradores");
+  const isProjectsRoute = currentPath.startsWith("/projetos");
   const isInventoryRoute = currentPath === "/inventory";
   const isFinanceRoute = currentPath === "/finance";
   const isComplianceRoute = currentPath === "/goals";
 
   const initialSection = useMemo<"pessoas" | "operacoes" | null>(() => {
     if (isProjectsRoute) return "operacoes";
-    if (isInventoryRoute) return "pessoas";
+    if (isCollaboratorsRoute) return "pessoas";
     return null;
-  }, [isProjectsRoute, isInventoryRoute]);
+  }, [isProjectsRoute, isCollaboratorsRoute]);
 
   React.useEffect(() => {
     setOpenSection((prev) => prev ?? initialSection);
@@ -85,83 +86,134 @@ export function AppSidebar() {
 
               {/* Pessoas */}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  onClick={() => setOpenSection((prev) => (prev === "pessoas" ? null : "pessoas"))}
-                  isActive={isInventoryRoute}
-                  className="justify-between"
-                >
-                  <span className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    {!collapsed && <span>Pessoas</span>}
-                  </span>
+                <div className="flex items-center justify-between gap-1">
+                  <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1">
+                    <NavLink to="/colaboradores" className="flex items-center gap-2" activeClassName="font-semibold">
+                      <Users className="h-4 w-4" />
+                      {!collapsed && <span>Pessoas</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
                   {!collapsed && (
-                    <ChevronDown
-                      className={cn(
-                        "h-3 w-3 transform transition-transform",
-                        openSection === "pessoas" ? "rotate-180" : "rotate-0",
-                      )}
-                    />
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setOpenSection((prev) => (prev === "pessoas" ? null : "pessoas"));
+                      }}
+                      className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      aria-label={openSection === "pessoas" ? "Recolher Pessoas" : "Expandir Pessoas"}
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "h-3 w-3 transform transition-transform",
+                          openSection === "pessoas" ? "rotate-180" : "rotate-0",
+                        )}
+                      />
+                    </button>
                   )}
-                </SidebarMenuButton>
+                </div>
                 {!collapsed && openSection === "pessoas" && (
                   <SidebarMenuSub>
-                    <SidebarMenuSubButton asChild isActive={isInventoryRoute}>
-                      <NavLink to="/inventory" className="flex items-center gap-2">
+                    <SidebarMenuSubButton asChild isActive={currentPath === "/colaboradores"}>
+                      <NavLink to="/colaboradores" className="flex items-center gap-2">
                         <UserRound className="h-4 w-4" />
-                        <span>Colaboradores</span>
+                        <span>Lista de Colaboradores</span>
                       </NavLink>
                     </SidebarMenuSubButton>
-                    <ul className="ml-4 mt-1 space-y-0.5 border-l border-sidebar-border/60 pl-3 text-xs text-sidebar-foreground/80">
-                      <li>Lista de Colaboradores</li>
-                      <li>
-                        Perfil do Colaborador
-                        <ul className="ml-3 mt-0.5 space-y-0.5 text-[11px] text-sidebar-foreground/70">
-                          <li>Equipamentos em Posse</li>
-                          <li>Objetivos e Tarefas</li>
-                          <li>Histórico</li>
-                        </ul>
-                      </li>
-                    </ul>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath.startsWith("/colaboradores/")}
+                      className="mt-1"
+                    >
+                      <NavLink to="/colaboradores/1" className="flex items-center gap-2">
+                        <UserRound className="h-4 w-4" />
+                        <span>Perfil do Colaborador</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/equipamentos")} size="sm">
+                        <NavLink to="/colaboradores/1/equipamentos" className="flex items-center gap-2">
+                          <span>Equipamentos em Posse</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/objetivos")} size="sm">
+                        <NavLink to="/colaboradores/1/objetivos" className="flex items-center gap-2">
+                          <span>Objetivos e Tarefas</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/historico")} size="sm">
+                        <NavLink to="/colaboradores/1/historico" className="flex items-center gap-2">
+                          <span>Histórico</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSub>
                   </SidebarMenuSub>
                 )}
               </SidebarMenuItem>
 
               {/* Operações */}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  onClick={() => setOpenSection((prev) => (prev === "operacoes" ? null : "operacoes"))}
-                  isActive={isProjectsRoute}
-                  className="justify-between"
-                >
-                  <span className="flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4" />
-                    {!collapsed && <span>Operações</span>}
-                  </span>
+                <div className="flex items-center justify-between gap-1">
+                  <SidebarMenuButton asChild isActive={isProjectsRoute} className="flex-1">
+                    <NavLink to="/projetos" className="flex items-center gap-2" activeClassName="font-semibold">
+                      <ClipboardList className="h-4 w-4" />
+                      {!collapsed && <span>Operações</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
                   {!collapsed && (
-                    <ChevronDown
-                      className={cn(
-                        "h-3 w-3 transform transition-transform",
-                        openSection === "operacoes" ? "rotate-180" : "rotate-0",
-                      )}
-                    />
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setOpenSection((prev) => (prev === "operacoes" ? null : "operacoes"));
+                      }}
+                      className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      aria-label={openSection === "operacoes" ? "Recolher Operações" : "Expandir Operações"}
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "h-3 w-3 transform transition-transform",
+                          openSection === "operacoes" ? "rotate-180" : "rotate-0",
+                        )}
+                      />
+                    </button>
                   )}
-                </SidebarMenuButton>
+                </div>
                 {!collapsed && openSection === "operacoes" && (
                   <SidebarMenuSub>
-                    <SidebarMenuSubButton asChild isActive={isProjectsRoute}>
-                      <NavLink to="/projects" className="flex items-center gap-2">
+                    <SidebarMenuSubButton asChild isActive={currentPath === "/projetos"}>
+                      <NavLink to="/projetos" className="flex items-center gap-2">
                         <ClipboardList className="h-4 w-4" />
                         <span>Projetos</span>
                       </NavLink>
                     </SidebarMenuSubButton>
-                    <ul className="ml-4 mt-1 space-y-0.5 border-l border-sidebar-border/60 pl-3 text-xs text-sidebar-foreground/80">
-                      <li>Visão Geral do Projeto</li>
-                      <li>Objetivos do Projeto</li>
-                      <li>Requisitos</li>
-                      <li>Documentos</li>
-                    </ul>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath.startsWith("/projetos/")}
+                      className="mt-1"
+                    >
+                      <NavLink to="/projetos/1" className="flex items-center gap-2">
+                        <ClipboardList className="h-4 w-4" />
+                        <span>Visão Geral do Projeto</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/objetivos")} size="sm">
+                        <NavLink to="/projetos/1/objetivos" className="flex items-center gap-2">
+                          <span>Objetivos do Projeto</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/requisitos")} size="sm">
+                        <NavLink to="/projetos/1/requisitos" className="flex items-center gap-2">
+                          <span>Requisitos</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/documentos")} size="sm">
+                        <NavLink to="/projetos/1/documentos" className="flex items-center gap-2">
+                          <span>Documentos</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSub>
                   </SidebarMenuSub>
                 )}
               </SidebarMenuItem>

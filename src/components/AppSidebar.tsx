@@ -3,7 +3,7 @@ import {
   LayoutGrid,
   Package,
   ClipboardList,
-  Target,
+  Award,
   TrendingUp,
   ChevronDown,
 } from "lucide-react";
@@ -18,11 +18,11 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: LayoutGrid, label: "Dashboard", to: "/" },
-  { icon: Package, label: "Inventory & Equipment", to: "/inventory" },
-  { icon: ClipboardList, label: "Projects & Operations", to: "/projects", hasDropdown: true },
-  { icon: Target, label: "Goals & Objectives", to: "/goals" },
-  { icon: TrendingUp, label: "Finance & Contracts", to: "/finance", hasDropdown: true },
+  { icon: LayoutGrid, label: "Visão geral", to: "/" },
+  { icon: Package, label: "Inventário & Equipamentos", to: "/inventory" },
+  { icon: ClipboardList, label: "Projetos & Operações", to: "/projects", hasDropdown: true },
+  { icon: Award, label: "Metas e Objetivos", to: "/goals" },
+  { icon: TrendingUp, label: "Finanças & Contratos", to: "/finance", hasDropdown: true },
 ];
 
 export function AppSidebar() {

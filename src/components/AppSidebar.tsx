@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  LayoutDashboard,
+  LayoutGrid,
   Package,
   ClipboardList,
   Target,
-  WalletCards,
+  TrendingUp,
   ChevronDown,
 } from "lucide-react";
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
@@ -18,11 +18,11 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", to: "/" },
+  { icon: LayoutGrid, label: "Dashboard", to: "/" },
   { icon: Package, label: "Inventory & Equipment", to: "/inventory" },
   { icon: ClipboardList, label: "Projects & Operations", to: "/projects", hasDropdown: true },
   { icon: Target, label: "Goals & Objectives", to: "/goals" },
-  { icon: WalletCards, label: "Finance & Contracts", to: "/finance", hasDropdown: true },
+  { icon: TrendingUp, label: "Finance & Contracts", to: "/finance", hasDropdown: true },
 ];
 
 export function AppSidebar() {
@@ -55,7 +55,7 @@ export function AppSidebar() {
                 cn(
                   "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
                   navActive || isActive
-                    ? "bg-muted text-foreground shadow-sm"
+                    ? "bg-card text-foreground shadow-sm"
                     : "text-muted-foreground hover:bg-muted/70",
                 )
               }

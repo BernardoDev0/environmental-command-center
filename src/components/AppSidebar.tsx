@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   LayoutGrid,
   Users,
@@ -9,13 +9,17 @@ import {
   ShieldCheck,
   Settings,
   ChevronDown,
+  LogOut,
+  Moon,
+  Sun,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -26,15 +30,31 @@ import {
   SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
 
   const [openSection, setOpenSection] = useState<"pessoas" | "operacoes" | null>(null);
+  const [isDark, setIsDark] = useState(true as boolean);
 
   const currentPath = location.pathname;
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const stored = localStorage.getItem("theme");
+    const prefersDark = stored ? stored === "dark" : root.classList.contains("dark");
+    if (prefersDark) {
+      root.classList.add("dark");
+      setIsDark(true);
+    } else {
+      root.classList.remove("dark");
+      setIsDark(false);
+    }
+  }, []);
 
   const isCollaboratorsRoute = currentPath.startsWith("/colaboradores");
   const isProjectsRoute = currentPath.startsWith("/projetos");
@@ -51,6 +71,24 @@ export function AppSidebar() {
   React.useEffect(() => {
     setOpenSection((prev) => prev ?? initialSection);
   }, [initialSection]);
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    if (root.classList.contains("dark")) {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setIsDark(false);
+    } else {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDark(true);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    navigate("/login");
+  };
 
   return (
     <Sidebar
@@ -78,7 +116,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={currentPath === "/"}>
                   <NavLink to="/" end className="flex items-center gap-2" activeClassName="font-semibold">
-                    {collapsed && <LayoutGrid className="h-5 w-5" />}
+                    <LayoutGrid className="h-5 w-5" />
                     {!collapsed && <span>Dashboard</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -89,7 +127,7 @@ export function AppSidebar() {
                 <div className="flex items-center justify-between gap-1">
                   <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1">
                     <NavLink to="/colaboradores" className="flex items-center gap-2" activeClassName="font-semibold">
-                      {collapsed && <Users className="h-5 w-5" />}
+                      <Users className="h-5 w-5" />
                       {!collapsed && <span>Pessoas</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -154,7 +192,7 @@ export function AppSidebar() {
                 <div className="flex items-center justify-between gap-1">
                   <SidebarMenuButton asChild isActive={isProjectsRoute} className="flex-1">
                     <NavLink to="/projetos" className="flex items-center gap-2" activeClassName="font-semibold">
-                      {collapsed && <ClipboardList className="h-5 w-5" />}
+                      <ClipboardList className="h-5 w-5" />
                       {!collapsed && <span>Operações</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -220,7 +258,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isInventoryRoute}>
                   <NavLink to="/inventory" className="flex items-center gap-2" activeClassName="font-semibold">
-                    {collapsed && <Package className="h-5 w-5" />}
+                    <Package className="h-5 w-5" />
                     {!collapsed && <span>Estoque &amp; Equipamentos</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -230,7 +268,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isFinanceRoute}>
                   <NavLink to="/finance" className="flex items-center gap-2" activeClassName="font-semibold">
-                    {collapsed && <TrendingUp className="h-5 w-5" />}
+                    <TrendingUp className="h-5 w-5" />
                     {!collapsed && <span>Financeiro &amp; Contratos</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -240,7 +278,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isComplianceRoute}>
                   <NavLink to="/goals" className="flex items-center gap-2" activeClassName="font-semibold">
-                    {collapsed && <ShieldCheck className="h-5 w-5" />}
+                    <ShieldCheck className="h-5 w-5" />
                     {!collapsed && <span>Compliance &amp; ESG</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -250,7 +288,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton type="button" className="justify-start">
                   <span className="flex items-center gap-2">
-                    {collapsed && <Settings className="h-5 w-5" />}
+                    <Settings className="h-5 w-5" />
                     {!collapsed && <span>Administração</span>}
                   </span>
                 </SidebarMenuButton>
@@ -259,6 +297,37 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="flex flex-col items-center gap-3 border-t border-sidebar-border/60 px-3 py-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="flex h-9 w-9 items-center justify-center rounded-md text-sidebar-foreground/80 hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground"
+                aria-label={isDark ? "Modo claro" : "Modo escuro"}
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">{isDark ? "Modo claro" : "Modo escuro"}</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex h-9 w-9 items-center justify-center rounded-md text-sidebar-foreground/80 hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground"
+                aria-label="Sair"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Sair</TooltipContent>
+          </Tooltip>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

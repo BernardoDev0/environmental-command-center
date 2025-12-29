@@ -114,8 +114,13 @@ export function AppSidebar() {
             <SidebarMenu>
               {/* Dashboard */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={currentPath === "/"}>
-                  <NavLink to="/" end className="flex items-center gap-2" activeClassName="font-semibold">
+                <SidebarMenuButton asChild isActive={currentPath === "/"} tooltip="Dashboard">
+                  <NavLink
+                    to="/"
+                    end
+                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                    activeClassName="font-semibold"
+                  >
                     <LayoutGrid className="h-5 w-5" />
                     {!collapsed && <span>Dashboard</span>}
                   </NavLink>
@@ -125,8 +130,12 @@ export function AppSidebar() {
               {/* Pessoas */}
               <SidebarMenuItem>
                 <div className="flex items-center justify-between gap-1">
-                  <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1">
-                    <NavLink to="/colaboradores" className="flex items-center gap-2" activeClassName="font-semibold">
+                  <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1" tooltip="Pessoas">
+                    <NavLink
+                      to="/colaboradores"
+                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="font-semibold"
+                    >
                       <Users className="h-5 w-5" />
                       {!collapsed && <span>Pessoas</span>}
                     </NavLink>
@@ -190,8 +199,12 @@ export function AppSidebar() {
               {/* Operações */}
               <SidebarMenuItem>
                 <div className="flex items-center justify-between gap-1">
-                  <SidebarMenuButton asChild isActive={isProjectsRoute} className="flex-1">
-                    <NavLink to="/projetos" className="flex items-center gap-2" activeClassName="font-semibold">
+                  <SidebarMenuButton asChild isActive={isProjectsRoute} className="flex-1" tooltip="Operações">
+                    <NavLink
+                      to="/projetos"
+                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="font-semibold"
+                    >
                       <ClipboardList className="h-5 w-5" />
                       {!collapsed && <span>Operações</span>}
                     </NavLink>
@@ -256,8 +269,12 @@ export function AppSidebar() {
 
               {/* Estoque & Equipamentos */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isInventoryRoute}>
-                  <NavLink to="/inventory" className="flex items-center gap-2" activeClassName="font-semibold">
+                <SidebarMenuButton asChild isActive={isInventoryRoute} tooltip="Estoque &amp; Equipamentos">
+                  <NavLink
+                    to="/inventory"
+                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                    activeClassName="font-semibold"
+                  >
                     <Package className="h-5 w-5" />
                     {!collapsed && <span>Estoque &amp; Equipamentos</span>}
                   </NavLink>
@@ -266,8 +283,12 @@ export function AppSidebar() {
 
               {/* Financeiro & Contratos */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isFinanceRoute}>
-                  <NavLink to="/finance" className="flex items-center gap-2" activeClassName="font-semibold">
+                <SidebarMenuButton asChild isActive={isFinanceRoute} tooltip="Financeiro &amp; Contratos">
+                  <NavLink
+                    to="/finance"
+                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                    activeClassName="font-semibold"
+                  >
                     <TrendingUp className="h-5 w-5" />
                     {!collapsed && <span>Financeiro &amp; Contratos</span>}
                   </NavLink>
@@ -276,8 +297,12 @@ export function AppSidebar() {
 
               {/* Compliance & ESG */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isComplianceRoute}>
-                  <NavLink to="/goals" className="flex items-center gap-2" activeClassName="font-semibold">
+                <SidebarMenuButton asChild isActive={isComplianceRoute} tooltip="Compliance &amp; ESG">
+                  <NavLink
+                    to="/goals"
+                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                    activeClassName="font-semibold"
+                  >
                     <ShieldCheck className="h-5 w-5" />
                     {!collapsed && <span>Compliance &amp; ESG</span>}
                   </NavLink>
@@ -286,7 +311,7 @@ export function AppSidebar() {
 
               {/* Administração */}
               <SidebarMenuItem>
-                <SidebarMenuButton type="button" className="justify-start">
+                <SidebarMenuButton type="button" className="justify-start" tooltip="Administração">
                   <span className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
                     {!collapsed && <span>Administração</span>}

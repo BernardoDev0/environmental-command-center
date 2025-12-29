@@ -24,8 +24,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUser = async () => {
     const token = localStorage.getItem("auth_token");
+
+    // Dev bypass: se não houver token, assume usuário ADMIN para permitir visualizar o sistema.
     if (!token) {
-      setUser(null);
+      setUser({
+        id: "dev-admin",
+        email: "dev@local",
+        name: "Administrador (dev)",
+        role: "ADMIN",
+        avatarUrl: null,
+      });
       setLoading(false);
       return;
     }

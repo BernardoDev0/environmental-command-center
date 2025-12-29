@@ -7,12 +7,12 @@ const DashboardLayout = () => {
   const location = useLocation();
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
+    <SidebarProvider className="min-h-screen w-full bg-background px-4 py-6">
+      <div className="flex min-h-full w-full gap-4">
         <AppSidebar />
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-full flex-1 flex-col">
           <TopBar />
-          <main className="flex-1 bg-background">
+          <main className="flex-1 rounded-2xl bg-card/40 p-6 shadow-sm">
             <Outlet key={location.pathname} />
           </main>
         </div>

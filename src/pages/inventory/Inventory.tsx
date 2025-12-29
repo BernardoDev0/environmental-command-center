@@ -3,11 +3,11 @@ const Inventory = () => {
     <main className="p-6">
       <section className="space-y-4">
         <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Inventory &amp; Equipment</h1>
-          <p className="text-sm text-muted-foreground">Track equipment, stock levels, and assignments across the organization.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Inventário &amp; Equipamentos</h1>
+          <p className="text-sm text-muted-foreground">Acompanhe equipamentos, níveis de estoque e alocações na organização.</p>
         </header>
         <div className="rounded-lg border border-dashed border-muted-foreground/30 p-8 text-center text-sm text-muted-foreground">
-          No equipment has been added yet. Once equipment is created, you&apos;ll see stock, assignments, and condition here.
+          Nenhum equipamento foi adicionado ainda. Assim que forem criados, você verá estoque, alocações e condição aqui.
         </div>
       </section>
     </main>

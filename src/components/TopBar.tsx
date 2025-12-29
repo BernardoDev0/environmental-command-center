@@ -11,13 +11,13 @@ export const TopBar = () => {
 
   useEffect(() => {
     const titles: Record<string, string> = {
-      "/": "Dashboard",
-      "/inventory": "Inventory & Equipment",
-      "/projects": "Projects & Operations",
-      "/goals": "Goals & Objectives",
-      "/finance": "Finance & Contracts",
+      "/": "Visão geral",
+      "/inventory": "Inventário & Equipamentos",
+      "/projects": "Projetos & Operações",
+      "/goals": "Metas e Objetivos",
+      "/finance": "Finanças & Contratos",
     };
-    document.title = `${titles[location.pathname] || "App"} – Environmental Enterprise`;
+    document.title = `${titles[location.pathname] || "Aplicação"} – Plataforma Ambiental`;
   }, [location.pathname]);
 
   const toggleTheme = () => {
@@ -42,20 +42,28 @@ export const TopBar = () => {
       <div className="flex flex-1 items-center justify-between gap-4">
         <h1 className="text-lg font-semibold tracking-tight">
           {location.pathname === "/"
-            ? "Dashboard"
-            : location.pathname.slice(1).charAt(0).toUpperCase() + location.pathname.slice(2)}
+            ? "Visão geral"
+            : location.pathname === "/inventory"
+              ? "Inventário & Equipamentos"
+              : location.pathname === "/projects"
+                ? "Projetos & Operações"
+                : location.pathname === "/goals"
+                  ? "Metas e Objetivos"
+                  : location.pathname === "/finance"
+                    ? "Finanças & Contratos"
+                    : "Plataforma"}
         </h1>
         <div className="flex items-center gap-3">
           <div className="relative w-64 max-w-xs">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="h-9 pl-9" placeholder="Search" />
+            <Input className="h-9 pl-9" placeholder="Buscar" />
           </div>
-          <Button variant="outline" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+          <Button variant="outline" size="icon" onClick={toggleTheme} aria-label="Alternar tema">
             <Moon className="h-4 w-4 dark:hidden" />
             <Sun className="hidden h-4 w-4 dark:block" />
           </Button>
           <Button variant="outline" size="sm" onClick={handleLogout}>
-            Logout
+            Sair
           </Button>
         </div>
       </div>

@@ -21,15 +21,15 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || "Invalid credentials");
-      }
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || "Credenciais inválidas");
+        }
       const data = await res.json();
       localStorage.setItem("auth_token", data.token);
       navigate("/");
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || "Falha no login");
     } finally {
       setLoading(false);
     }
@@ -39,22 +39,22 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-background">
       <Card className="w-full max-w-md border-border bg-card/95 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Sign in</CardTitle>
-          <CardDescription>Access the environmental operations platform.</CardDescription>
+          <CardTitle className="text-2xl">Entrar</CardTitle>
+          <CardDescription>Acesse a plataforma de operações ambientais.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium">Email</label>
+              <label className="mb-1 block text-sm font-medium">E-mail</label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Password</label>
+              <label className="mb-1 block text-sm font-medium">Senha</label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>

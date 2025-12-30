@@ -7,6 +7,8 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Inventory from "./pages/inventory/Inventory";
+import EquipmentDetail from "./pages/inventory/EquipmentDetail";
+import EquipmentHistory from "./pages/inventory/EquipmentHistory";
 import Projects from "./pages/projects/Projects";
 import Goals from "./pages/goals/Goals";
 import Finance from "./pages/finance/Finance";
@@ -79,8 +81,25 @@ const App = () => (
               <Route
                 path="/inventory"
                 element={
-                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER", "USER"]}>
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
                     <Inventory />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/equipamentos/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <EquipmentDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/equipamentos/:id/historico"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <EquipmentHistory />
                   </ProtectedRoute>
                 }
               />

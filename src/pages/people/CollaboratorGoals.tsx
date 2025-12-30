@@ -8,7 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export type ObjectiveStatus = "PLANEJADO" | "EM_ANDAMENTO" | "CONCLUIDO" | "ATRASADO";
-export type TaskStatus = "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA";
+export type ObjectivePriority = "BAIXA" | "MEDIA" | "ALTA";
+export type TaskStatus = "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "BLOQUEADA";
+
+type TaskComment = {
+  id: string;
+  comment: string;
+  createdAt: string;
+  authorName?: string;
+};
 
 type Task = {
   id: string;
@@ -16,16 +24,19 @@ type Task = {
   description: string | null;
   status: TaskStatus;
   dueDate: string | null;
+  comments?: TaskComment[];
 };
 
 type Objective = {
   id: string;
   title: string;
   description: string | null;
+  priority: ObjectivePriority;
   status: ObjectiveStatus;
   startDate: string | null;
   dueDate: string | null;
   tasks: Task[];
+  isOverdue?: boolean;
 };
 
 const statusLabels: Record<ObjectiveStatus, string> = {
@@ -42,10 +53,17 @@ const statusBadgeVariant: Record<ObjectiveStatus, string> = {
   ATRASADO: "destructive",
 };
 
+const priorityLabels: Record<ObjectivePriority, string> = {
+  BAIXA: "Baixa",
+  MEDIA: "Média",
+  ALTA: "Alta",
+};
+
 const taskStatusLabels: Record<TaskStatus, string> = {
   PENDENTE: "Pendente",
   EM_ANDAMENTO: "Em andamento",
   CONCLUIDA: "Concluída",
+  BLOQUEADA: "Bloqueada",
 };
 
 const CollaboratorGoals = () => {
@@ -77,11 +95,11 @@ const CollaboratorGoals = () => {
     },
   });
 
-  const canUpdateTasks = user?.role === "ADMIN" || user?.role === "OPERATIONS_MANAGER" || user?.role === "USER";
+  const canUpdateTasks = !!user;
 
-  const updateTaskMutation = useMutation({
+  const updateTaskStatusMutation = useMutation({
     mutationFn: async ({ taskId, status }: { taskId: string; status: TaskStatus }) => {
-      const res = await fetch(`http://localhost:4000/api/tasks/${taskId}`, {
+      const res = await fetch(`http://localhost:4000/api/tasks/${taskId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -99,11 +117,51 @@ const CollaboratorGoals = () => {
     },
   });
 
+  const addCommentMutation = useMutation({
+    mutationFn: async ({ taskId, comment }: { taskId: string; comment: string }) => {
+      const res = await fetch(`http://localhost:4000/api/tasks/${taskId}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ comment }),
+      });
+      if (!res.ok) {
+        throw new Error("Não foi possível adicionar o comentário");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["objectives", collaboratorId] });
+    },
+  });
+
+  const justifyDelayMutation = useMutation({
+    mutationFn: async ({ objectiveId, justification }: { objectiveId: string; justification: string }) => {
+      const res = await fetch(`http://localhost:4000/api/objectives/${objectiveId}/delay-justification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ justification }),
+      });
+      if (!res.ok) {
+        throw new Error("Não foi possível registrar a justificativa de atraso");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["objectives", collaboratorId] });
+    },
+  });
+
   const handleToggleTask = (task: Task) => {
-    if (!canUpdateTasks || updateTaskMutation.isPending) return;
+    if (!canUpdateTasks || updateTaskStatusMutation.isPending) return;
 
     const nextStatus: TaskStatus = task.status === "CONCLUIDA" ? "PENDENTE" : "CONCLUIDA";
-    updateTaskMutation.mutate({ taskId: task.id, status: nextStatus });
+    updateTaskStatusMutation.mutate({ taskId: task.id, status: nextStatus });
   };
 
   const renderStatusBadge = (status: ObjectiveStatus) => {
@@ -186,6 +244,9 @@ const CollaboratorGoals = () => {
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-semibold leading-tight text-foreground">{objective.title}</h3>
                       {renderStatusBadge(objective.status)}
+                      <Badge variant="outline" className="text-[10px]">
+                        Prioridade: {priorityLabels[objective.priority]}
+                      </Badge>
                     </div>
                     {objective.description && (
                       <p className="text-xs text-muted-foreground line-clamp-2">{objective.description}</p>
@@ -256,6 +317,23 @@ const CollaboratorGoals = () => {
                                       Prazo: {new Date(task.dueDate).toLocaleDateString("pt-BR")}
                                     </p>
                                   )}
+                                  {task.comments && task.comments.length > 0 && (
+                                    <p className="text-[10px] text-muted-foreground">
+                                      Último comentário: {task.comments[task.comments.length - 1]?.comment}
+                                    </p>
+                                  )}
+                                  <button
+                                    type="button"
+                                    className="mt-1 text-[10px] text-primary underline-offset-2 hover:underline"
+                                    onClick={() => {
+                                      const comment = window.prompt("Adicionar comentário à tarefa:");
+                                      if (comment && comment.trim()) {
+                                        addCommentMutation.mutate({ taskId: task.id, comment: comment.trim() });
+                                      }
+                                    }}
+                                  >
+                                    Adicionar comentário
+                                  </button>
                                 </div>
                               </div>
                             </li>
@@ -263,9 +341,9 @@ const CollaboratorGoals = () => {
                         })}
                       </ul>
                     )}
-                    {updateTaskMutation.isError && (
+                    {updateTaskStatusMutation.isError && (
                       <p className="mt-2 flex items-center gap-1 text-[11px] text-destructive">
-                        <AlertCircle className="h-3 w-3" /> Não foi possível atualizar a tarefa. Tente novamente.
+                        <AlertCircle className="h-3 w-3" /> Não foi possível atualizar a tarefa ou comentário. Tente novamente.
                       </p>
                     )}
                   </div>

@@ -54,8 +54,8 @@ model Supplier {
 }
 
 model Contract {
-  id          String   @id @default(cuid())
-  title       String
+  id        String   @id @default(cuid())
+  title     String
   supplierId  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -92,4 +92,64 @@ model Collaborator {
   status    CollaboratorStatus @default(ACTIVE)
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
+  objectives Objective[]
 }
+
+enum ObjectiveStatus {
+  PLANEJADO
+  EM_ANDAMENTO
+  CONCLUIDO
+  ATRASADO
+}
+
+enum TaskStatus {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDA
+}
+
+model Objective {
+  id             String          @id @default(cuid())
+  employeeId     String
+  employee       Collaborator    @relation(fields: [employeeId], references: [id])
+  title          String
+  description    String?
+  status         ObjectiveStatus @default(PLANEJADO)
+  startDate      DateTime?
+  dueDate        DateTime?
+  createdByUserId String
+  createdBy      User            @relation(fields: [createdByUserId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  tasks          Task[]
+  attachments    Attachment[]
+}
+
+model Task {
+  id          String      @id @default(cuid())
+  objectiveId String
+  objective   Objective   @relation(fields: [objectiveId], references: [id])
+  title       String
+  description String?
+  status      TaskStatus  @default(PENDENTE)
+  dueDate     DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  attachments Attachment[]
+}
+
+enum AttachmentRelatedType {
+  OBJECTIVE
+  TASK
+}
+
+model Attachment {
+  id          String                 @id @default(cuid())
+  relatedType AttachmentRelatedType
+  relatedId   String
+  fileName    String
+  filePath    String
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+}
+

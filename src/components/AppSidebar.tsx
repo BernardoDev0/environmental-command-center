@@ -138,6 +138,22 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              {/* Objetivos & Tarefas (global) - apenas ADMIN / OPERATIONS_MANAGER */}
+              {isAdminOrOps && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Objetivos &amp; Tarefas (global)">
+                    <NavLink
+                      to="/objetivos"
+                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="font-semibold"
+                    >
+                      <ClipboardList className="h-5 w-5" />
+                      {!collapsed && <span>Objetivos &amp; Tarefas</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
               {/* Pessoas */}
               <SidebarMenuItem>
                 <div className="flex items-center justify-between gap-1">
@@ -406,6 +422,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         <div className="flex flex-col items-center gap-3 border-t border-sidebar-border/60 px-3 py-4">
           <Tooltip>
@@ -440,4 +457,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-

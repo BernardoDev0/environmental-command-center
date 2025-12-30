@@ -64,7 +64,7 @@ const App = () => (
 
               {/* Dashboards dedicados por papel */}
               <Route
-                path="/admin/dashboard"
+                path="/dashboard/admin"
                 element={
                   <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
                     <AdminDashboard />
@@ -73,7 +73,7 @@ const App = () => (
               />
 
               <Route
-                path="/colaborador/dashboard"
+                path="/dashboard/colaborador"
                 element={
                   <ProtectedRoute allowedRoles={["USER", "ADMIN", "OPERATIONS_MANAGER"]}>
                     <CollaboratorDashboard />

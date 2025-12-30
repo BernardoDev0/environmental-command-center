@@ -298,14 +298,14 @@ export function AppSidebar() {
 
               {/* Estoque & Equipamentos */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isInventoryRoute} tooltip="Estoque &amp; Equipamentos">
+                <SidebarMenuButton asChild isActive={isInventoryRoute} tooltip="Inventário &amp; Equipamentos">
                   <NavLink
                     to="/inventory"
                     className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                     activeClassName="font-semibold"
                   >
                     <Package className="h-5 w-5" />
-                    {!collapsed && <span>Estoque &amp; Equipamentos</span>}
+                    {!collapsed && <span>Inventário &amp; Equipamentos</span>}
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

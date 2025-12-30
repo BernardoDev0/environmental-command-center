@@ -39,7 +39,9 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
 
-  const [openSection, setOpenSection] = useState<"pessoas" | "operacoes" | "compliance" | null>(null);
+  const [openSection, setOpenSection] = useState<"pessoas" | "operacoes" | "compliance" | "administracao" | null>(
+    null,
+  );
   const [isDark, setIsDark] = useState(true as boolean);
 
   const currentPath = location.pathname;
@@ -72,12 +74,19 @@ export function AppSidebar() {
   const isInventoryRoute = currentPath === "/inventory";
   const isFinanceRoute = currentPath === "/finance";
   const isComplianceRoute = currentPath.startsWith("/compliance");
+  const isAdministrationRoute = currentPath.startsWith("/administracao");
 
-  const initialSection = useMemo<"pessoas" | "operacoes" | null>(() => {
+  const initialSection = useMemo<"pessoas" | "operacoes" | "compliance" | "administracao" | null>(() => {
     if (isProjectsRoute) return "operacoes";
     if (isCollaboratorsRoute) return "pessoas";
+    if (isComplianceRoute) return "compliance";
+    if (isAdministrationRoute) return "administracao";
     return null;
-  }, [isProjectsRoute, isCollaboratorsRoute]);
+  }, [isProjectsRoute, isCollaboratorsRoute, isComplianceRoute, isAdministrationRoute]);
+
+  React.useEffect(() => {
+    setOpenSection((prev) => prev ?? initialSection);
+  }, [initialSection]);
 
   React.useEffect(() => {
     setOpenSection((prev) => prev ?? initialSection);
@@ -410,14 +419,71 @@ export function AppSidebar() {
               {/* Administração */}
               {isAdminOrOps && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton type="button" className="justify-start" tooltip="Administração">
-                    <span className="flex items-center gap-2">
-                      <Settings className="h-5 w-5" />
-                      {!collapsed && <span>Administração</span>}
-                    </span>
-                  </SidebarMenuButton>
+                  <div className="flex items-center justify-between gap-1">
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isAdministrationRoute}
+                      className="flex-1"
+                      tooltip="Administração"
+                    >
+                      <NavLink
+                        to="/administracao/usuarios"
+                        className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                        activeClassName="font-semibold"
+                      >
+                        <Settings className="h-5 w-5" />
+                        {!collapsed && <span>Administração</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                    {!collapsed && (
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setOpenSection((prev) => (prev === "administracao" ? null : "administracao"));
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        aria-label={openSection === "administracao" ? "Recolher Administração" : "Expandir Administração"}
+                      >
+                        <ChevronDown
+                          className={cn(
+                            "h-3 w-3 transform text-sidebar-foreground/70 transition-transform duration-300 ease-out",
+                            openSection === "administracao" ? "rotate-180" : "rotate-0",
+                          )}
+                        />
+                      </button>
+                    )}
+                  </div>
+                  {!collapsed && openSection === "administracao" && (
+                    <SidebarMenuSub>
+                      <SidebarMenuSubButton asChild isActive={currentPath === "/administracao/usuarios"}>
+                        <NavLink to="/administracao/usuarios" className="flex items-center gap-2">
+                          <span>Usuários &amp; permissões</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton asChild isActive={currentPath === "/administracao/cargos-funcoes"}>
+                        <NavLink to="/administracao/cargos-funcoes" className="flex items-center gap-2">
+                          <span>Cargos &amp; funções</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={currentPath === "/administracao/estrutura-organizacional"}
+                      >
+                        <NavLink to="/administracao/estrutura-organizacional" className="flex items-center gap-2">
+                          <span>Estrutura organizacional</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton asChild isActive={currentPath === "/administracao/configuracoes"}>
+                        <NavLink to="/administracao/configuracoes" className="flex items-center gap-2">
+                          <span>Configurações do sistema</span>
+                        </NavLink>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSub>
+                  )}
                 </SidebarMenuItem>
               )}
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

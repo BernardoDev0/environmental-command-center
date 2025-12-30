@@ -27,6 +27,8 @@ import EnvironmentalLicenses from "./pages/compliance/EnvironmentalLicenses";
 import EsgIndicators from "./pages/compliance/EsgIndicators";
 import AuditsAndNonConformities from "./pages/compliance/AuditsAndNonConformities";
 import ComplianceReports from "./pages/compliance/ComplianceReports";
+import AdminObjectivesList from "./pages/objectives/AdminObjectivesList";
+import MyObjectives from "./pages/objectives/MyObjectives";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleBasedRedirect from "./components/RoleBasedRedirect";
@@ -162,11 +164,22 @@ const App = () => (
                 <Route path="historico" element={<CollaboratorHistory />} />
               </Route>
               {/* Operações / Projetos */}
+              {/* Objetivos & Tarefas (global admin) */}
               <Route
-                path="/projetos"
+                path="/objetivos"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <AdminObjectivesList />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Meus Objetivos (visão colaborador) */}
+              <Route
+                path="/meus-objetivos"
                 element={
                   <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER", "USER"]}>
-                    <ProjectsList />
+                    <MyObjectives />
                   </ProtectedRoute>
                 }
               />

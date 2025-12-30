@@ -10,9 +10,11 @@ export const TopBar = () => {
   useEffect(() => {
     const titles: Record<string, string> = {
       "/": "Dashboard",
-      "/inventory": "Estoque & Equipamentos",
+      "/dashboard/admin": "Dashboard Administrativo",
+      "/dashboard/colaborador": "Meu Dashboard",
+      "/inventory": "Inventário & Equipamentos",
       "/projects": "Operações – Projetos",
-      "/goals": "Compliance & ESG",
+      "/goals": "Objetivos & Tarefas",
       "/finance": "Financeiro & Contratos",
     };
     document.title = `${titles[location.pathname] || "Aplicação"} – Plataforma Ambiental`;
@@ -23,17 +25,19 @@ export const TopBar = () => {
       <SidebarTrigger aria-label="Alternar barra lateral" />
       <div className="flex flex-1 items-center justify-between gap-6">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          {location.pathname === "/"
-            ? "Dashboard executivo"
-            : location.pathname === "/inventory"
-              ? "Inventário & Equipamentos"
-              : location.pathname === "/projects"
-                ? "Operações – Projetos"
-                : location.pathname === "/goals"
-                  ? "Objetivos & Tarefas"
-                  : location.pathname === "/finance"
-                    ? "Financeiro & Contratos"
-                    : "Plataforma Ambiental"}
+          {location.pathname === "/dashboard/admin"
+            ? "Dashboard Administrativo"
+            : location.pathname === "/dashboard/colaborador"
+              ? "Meu Dashboard"
+              : location.pathname === "/inventory"
+                ? "Inventário & Equipamentos"
+                : location.pathname === "/projects"
+                  ? "Operações – Projetos"
+                  : location.pathname === "/goals"
+                    ? "Objetivos & Tarefas"
+                    : location.pathname === "/finance"
+                      ? "Financeiro & Contratos"
+                      : "Plataforma Ambiental"}
         </h1>
         <div className="flex items-center gap-4">
           <div className="relative w-72 max-w-xs">

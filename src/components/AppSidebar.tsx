@@ -48,13 +48,14 @@ export function AppSidebar() {
 
   const { user } = useAuth();
   const isAdminOrOps = user?.role === "ADMIN" || user?.role === "OPERATIONS_MANAGER";
+  const isCollaborator = user?.role === "USER";
 
   const dashboardPath = !user
     ? "/"
     : user.role === "USER"
-      ? "/colaborador/dashboard"
-      : "/admin/dashboard";
-  const isDashboardRoute = currentPath === "/colaborador/dashboard" || currentPath === "/admin/dashboard";
+      ? "/dashboard/colaborador"
+      : "/dashboard/admin";
+  const isDashboardRoute = currentPath === "/dashboard/colaborador" || currentPath === "/dashboard/admin";
 
   useEffect(() => {
     const root = document.documentElement;
@@ -155,8 +156,8 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild tooltip="Objetivos &amp; Tarefas (global)">
                     <NavLink
                       to="/objetivos"
-                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                      activeClassName="font-semibold"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sidebar-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="bg-sidebar-accent text-sidebar-accent-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
                     >
                       <ClipboardList className="h-5 w-5" />
                       {!collapsed && <span>Objetivos &amp; Tarefas</span>}
@@ -165,76 +166,106 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               )}
 
-              {/* Pessoas */}
+              {/* Meus Objetivos & Tarefas - visível para todos os perfis */}
               <SidebarMenuItem>
-                <div className="flex items-center justify-between gap-1">
-                  <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1" tooltip="Pessoas">
-                    <NavLink
-                      to="/colaboradores"
-                      className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                      activeClassName="font-semibold"
-                    >
-                      <Users className="h-5 w-5" />
-                      {!collapsed && <span>Pessoas</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                  {!collapsed && (
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setOpenSection((prev) => (prev === "pessoas" ? null : "pessoas"));
-                      }}
-                      className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      aria-label={openSection === "pessoas" ? "Recolher Pessoas" : "Expandir Pessoas"}
-                    >
-                      <ChevronDown
-                        className={cn(
-                          "h-3 w-3 transform text-sidebar-foreground/70 transition-transform duration-300 ease-out",
-                          openSection === "pessoas" ? "rotate-180" : "rotate-0",
-                        )}
-                      />
-                    </button>
-                  )}
-                </div>
-                {!collapsed && openSection === "pessoas" && (
-                  <SidebarMenuSub>
-                    {isAdminOrOps && (
+                <SidebarMenuButton asChild tooltip="Meus Objetivos &amp; Tarefas">
+                  <NavLink
+                    to="/meus-objetivos"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sidebar-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                    activeClassName="bg-sidebar-accent text-sidebar-accent-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                  >
+                    <ClipboardList className="h-5 w-5" />
+                    {!collapsed && <span>Meus Objetivos</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Pessoas - somente ADMIN / OPERATIONS_MANAGER */}
+              {isAdminOrOps && (
+                <SidebarMenuItem>
+                  <div className="flex items-center justify-between gap-1">
+                    <SidebarMenuButton asChild isActive={isCollaboratorsRoute} className="flex-1" tooltip="Pessoas">
+                      <NavLink
+                        to="/colaboradores"
+                        className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                        activeClassName="font-semibold"
+                      >
+                        <Users className="h-5 w-5" />
+                        {!collapsed && <span>Pessoas</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                    {!collapsed && (
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setOpenSection((prev) => (prev === "pessoas" ? null : "pessoas"));
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        aria-label={openSection === "pessoas" ? "Recolher Pessoas" : "Expandir Pessoas"}
+                      >
+                        <ChevronDown
+                          className={cn(
+                            "h-3 w-3 transform text-sidebar-foreground/70 transition-transform duration-300 ease-out",
+                            openSection === "pessoas" ? "rotate-180" : "rotate-0",
+                          )}
+                        />
+                      </button>
+                    )}
+                  </div>
+                  {!collapsed && openSection === "pessoas" && (
+                    <SidebarMenuSub>
                       <SidebarMenuSubButton asChild isActive={currentPath === "/colaboradores"}>
                         <NavLink to="/colaboradores" className="flex items-center gap-2">
                           <span>Lista de Colaboradores</span>
                         </NavLink>
                       </SidebarMenuSubButton>
-                    )}
-                    <SidebarMenuSubButton
-                      asChild
-                      isActive={currentPath.startsWith("/colaboradores/")}
-                      className="mt-1"
-                    >
-                      <NavLink to="/colaboradores/1" className="flex items-center gap-2">
-                        <span>Perfil do Colaborador</span>
-                      </NavLink>
-                    </SidebarMenuSubButton>
-                    <SidebarMenuSub>
-                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/equipamentos")} size="sm">
-                        <NavLink to="/colaboradores/1/equipamentos" className="flex items-center gap-2">
-                          <span>Equipamentos em Posse</span>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={currentPath.startsWith("/colaboradores/")}
+                        className="mt-1"
+                      >
+                        <NavLink to="/colaboradores/1" className="flex items-center gap-2">
+                          <span>Perfil do Colaborador</span>
                         </NavLink>
                       </SidebarMenuSubButton>
-                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/objetivos")} size="sm">
-                        <NavLink to="/colaboradores/1/objetivos" className="flex items-center gap-2">
-                          <span>Objetivos e Tarefas</span>
-                        </NavLink>
-                      </SidebarMenuSubButton>
-                      <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/historico")} size="sm">
-                        <NavLink to="/colaboradores/1/historico" className="flex items-center gap-2">
-                          <span>Histórico</span>
-                        </NavLink>
-                      </SidebarMenuSubButton>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/equipamentos")} size="sm">
+                          <NavLink to="/colaboradores/1/equipamentos" className="flex items-center gap-2">
+                            <span>Equipamentos em Posse</span>
+                          </NavLink>
+                        </SidebarMenuSubButton>
+                        <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/objetivos")} size="sm">
+                          <NavLink to="/colaboradores/1/objetivos" className="flex items-center gap-2">
+                            <span>Objetivos e Tarefas</span>
+                          </NavLink>
+                        </SidebarMenuSubButton>
+                        <SidebarMenuSubButton asChild isActive={currentPath.endsWith("/historico")} size="sm">
+                          <NavLink to="/colaboradores/1/historico" className="flex items-center gap-2">
+                            <span>Histórico</span>
+                          </NavLink>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSub>
                     </SidebarMenuSub>
-                  </SidebarMenuSub>
-                )}
-              </SidebarMenuItem>
+                  )}
+                </SidebarMenuItem>
+              )}
+
+              {/* Atalho direto para Meu Perfil para colaboradores */}
+              {isCollaborator && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Meu perfil">
+                    <NavLink
+                      to="/colaboradores/1"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sidebar-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      activeClassName="bg-sidebar-accent text-sidebar-accent-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                    >
+                      <UserRound className="h-5 w-5" />
+                      {!collapsed && <span>Meu Perfil</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
 
               {/* Operações */}
               <SidebarMenuItem>

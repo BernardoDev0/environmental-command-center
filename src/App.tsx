@@ -22,6 +22,11 @@ import ProjectOverview from "./pages/projects/ProjectOverview";
 import ProjectGoals from "./pages/projects/ProjectGoals";
 import ProjectRequirements from "./pages/projects/ProjectRequirements";
 import ProjectDocuments from "./pages/projects/ProjectDocuments";
+import LegalCompliance from "./pages/compliance/LegalCompliance";
+import EnvironmentalLicenses from "./pages/compliance/EnvironmentalLicenses";
+import EsgIndicators from "./pages/compliance/EsgIndicators";
+import AuditsAndNonConformities from "./pages/compliance/AuditsAndNonConformities";
+import ComplianceReports from "./pages/compliance/ComplianceReports";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleBasedRedirect from "./components/RoleBasedRedirect";
@@ -93,11 +98,44 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+              {/* Compliance & ESG */}
               <Route
-                path="/finance"
+                path="/compliance/conformidade-legal"
                 element={
-                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
-                    <Finance />
+                  <ProtectedRoute allowedRoles={['ADMIN', 'OPERATIONS_MANAGER', 'USER']}>
+                    <LegalCompliance />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/compliance/licencas-ambientais"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN', 'OPERATIONS_MANAGER', 'USER']}>
+                    <EnvironmentalLicenses />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/compliance/indicadores-esg"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN', 'OPERATIONS_MANAGER', 'USER']}>
+                    <EsgIndicators />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/compliance/auditorias-nao-conformidades"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN', 'OPERATIONS_MANAGER', 'USER']}>
+                    <AuditsAndNonConformities />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/compliance/relatorios"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN', 'OPERATIONS_MANAGER', 'USER']}>
+                    <ComplianceReports />
                   </ProtectedRoute>
                 }
               />

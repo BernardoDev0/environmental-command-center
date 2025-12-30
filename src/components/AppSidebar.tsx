@@ -47,9 +47,12 @@ export function AppSidebar() {
   const { user } = useAuth();
   const isAdminOrOps = user?.role === "ADMIN" || user?.role === "OPERATIONS_MANAGER";
 
-  const dashboardPath = !user ? "/" : user.role === "USER" ? "/dashboard" : "/dashboard/admin";
-  const isDashboardRoute =
-    currentPath === "/" || currentPath === "/dashboard" || currentPath === "/dashboard/admin";
+  const dashboardPath = !user
+    ? "/"
+    : user.role === "USER"
+      ? "/colaborador/dashboard"
+      : "/admin/dashboard";
+  const isDashboardRoute = currentPath === "/colaborador/dashboard" || currentPath === "/admin/dashboard";
 
   useEffect(() => {
     const root = document.documentElement;

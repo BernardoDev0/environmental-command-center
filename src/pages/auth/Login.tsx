@@ -35,9 +35,9 @@ const Login = () => {
 
       const role = data.user?.role as "ADMIN" | "OPERATIONS_MANAGER" | "USER" | undefined;
       if (role === "ADMIN" || role === "OPERATIONS_MANAGER") {
-        navigate("/dashboard/admin", { replace: true });
+        navigate("/admin/dashboard", { replace: true });
       } else {
-        navigate("/dashboard", { replace: true });
+        navigate("/colaborador/dashboard", { replace: true });
       }
     } catch (err: any) {
       setError(err.message || "Falha no login");

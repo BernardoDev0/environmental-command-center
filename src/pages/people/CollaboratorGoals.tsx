@@ -69,9 +69,10 @@ const taskStatusLabels: Record<TaskStatus, string> = {
 const CollaboratorGoals = () => {
   const { id: collaboratorId } = useParams();
   const { user } = useAuth();
+  const isAdminOrOps = user?.role === "ADMIN" || user?.role === "OPERATIONS_MANAGER";
   const queryClient = useQueryClient();
 
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
 
@@ -201,6 +202,10 @@ const CollaboratorGoals = () => {
   }
 
   const hasObjectives = objectives.length > 0;
+  const selectedObjective =
+    objectives && objectives.length > 0
+      ? objectives.find((o) => o.id === selectedObjectiveId) ?? objectives[0]
+      : null;
 
   return (
     <section className="mt-6 space-y-6">
@@ -216,141 +221,224 @@ const CollaboratorGoals = () => {
           <div className="flex flex-col items-center gap-3 text-center">
             <Target className="h-8 w-8 text-muted-foreground" />
             <div className="space-y-1">
-              <p className="text-sm font-medium text-foreground">Nenhum objetivo cadastrado para este colaborador.</p>
+              <p className="text-sm font-medium text-foreground">Nenhum objetivo atribuído a este colaborador.</p>
               <p className="text-sm text-muted-foreground">
                 Utilize esta área para registrar metas, resultados esperados e tarefas de acompanhamento, garantindo
                 alinhamento contínuo entre colaborador e gestão.
               </p>
             </div>
+            {isAdminOrOps && (
+              <div className="mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-border/70 bg-background/60 px-4 py-2 text-xs font-medium text-foreground hover:bg-background/90"
+                >
+                  Criar novo objetivo
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          {objectives.map((objective) => {
-            const activeTasks = objective.tasks.filter((t) => t.status !== "CONCLUIDA").length;
-            const completedTasks = objective.tasks.filter((t) => t.status === "CONCLUIDA").length;
+        <div className="grid gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)]">
+          {/* Lista de objetivos (lado esquerdo) */}
+          <div className="space-y-3">
+            {objectives.map((objective) => {
+              const totalTasks = objective.tasks.length;
+              const completedTasks = objective.tasks.filter((t) => t.status === "CONCLUIDA").length;
+              const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+              const isSelected = selectedObjective && selectedObjective.id === objective.id;
+              const isOverdue =
+                objective.status === "ATRASADO" ||
+                (objective.dueDate && objective.status !== "CONCLUIDO" &&
+                  new Date(objective.dueDate) < new Date());
 
-            return (
-              <div
-                key={objective.id}
-                className="rounded-2xl border border-border/70 bg-card/80 p-5 shadow-lg shadow-black/30"
-              >
+              return (
                 <button
+                  key={objective.id}
                   type="button"
-                  className="flex w-full items-start justify-between gap-4 text-left"
-                  onClick={() => setExpandedId((prev) => (prev === objective.id ? null : objective.id))}
+                  onClick={() => setSelectedObjectiveId(objective.id)}
+                  className={cn(
+                    "w-full rounded-2xl border px-4 py-3 text-left shadow-lg shadow-black/30 transition-colors",
+                    isSelected
+                      ? "border-primary bg-card/95"
+                      : "border-border/70 bg-card/80 hover:bg-card/90",
+                  )}
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold leading-tight text-foreground">{objective.title}</h3>
-                      {renderStatusBadge(objective.status)}
-                      <Badge variant="outline" className="text-[10px]">
-                        Prioridade: {priorityLabels[objective.priority]}
-                      </Badge>
-                    </div>
-                    {objective.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">{objective.description}</p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
-                      {objective.dueDate && (
-                        <span>
-                          Prazo: {new Date(objective.dueDate).toLocaleDateString("pt-BR")}
-                        </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-sm font-semibold leading-tight text-foreground">{objective.title}</h3>
+                        {renderStatusBadge(objective.status)}
+                        <Badge variant="outline" className="text-[10px]">
+                          Prioridade: {priorityLabels[objective.priority]}
+                        </Badge>
+                      </div>
+                      {objective.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">{objective.description}</p>
                       )}
-                      <span>
-                        Tarefas ativas: {activeTasks} • Concluídas: {completedTasks}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
+                        {objective.dueDate && (
+                          <span className={cn(isOverdue && "text-destructive font-medium")}>
+                            Prazo: {new Date(objective.dueDate).toLocaleDateString("pt-BR")}
+                          </span>
+                        )}
+                        <span>
+                          Tarefas concluídas: {completedTasks}/{totalTasks || 0}
+                        </span>
+                      </div>
                     </div>
+                    {isOverdue && (
+                      <span className="text-[11px] font-medium text-destructive">Em atraso</span>
+                    )}
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {expandedId === objective.id ? "Recolher" : "Detalhar"}
-                  </span>
+                  <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted/40">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
                 </button>
+              );
+            })}
+          </div>
 
-                {expandedId === objective.id && (
-                  <div className="mt-4 space-y-2 border-t border-border/60 pt-3">
-                    {objective.tasks.length === 0 ? (
-                      <p className="text-xs text-muted-foreground">Nenhuma tarefa cadastrada para este objetivo.</p>
-                    ) : (
-                      <ul className="space-y-2">
-                        {objective.tasks.map((task) => {
-                          const isDone = task.status === "CONCLUIDA";
-                          return (
-                            <li
-                              key={task.id}
-                              className="flex items-start justify-between gap-3 rounded-xl bg-background/40 px-3 py-2"
-                            >
-                              <div className="flex items-start gap-2">
+          {/* Detalhe do objetivo selecionado (lado direito) */}
+          <div className="space-y-3 rounded-2xl border border-border/70 bg-card/90 p-5 shadow-lg shadow-black/30">
+            {!selectedObjective ? (
+              <p className="text-sm text-muted-foreground">
+                Selecione um objetivo na lista ao lado para visualizar descrição completa e tarefas associadas.
+              </p>
+            ) : (
+              <>
+                <div className="space-y-2 border-b border-border/60 pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-base font-semibold leading-tight text-foreground">
+                          {selectedObjective.title}
+                        </h3>
+                        {renderStatusBadge(selectedObjective.status)}
+                        <Badge variant="outline" className="text-[10px]">
+                          Prioridade: {priorityLabels[selectedObjective.priority]}
+                        </Badge>
+                      </div>
+                      {selectedObjective.description && (
+                        <p className="text-sm text-muted-foreground">{selectedObjective.description}</p>
+                      )}
+                    </div>
+                    {isAdminOrOps && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="border-border/70 bg-background/60 text-xs font-medium text-foreground hover:bg-background/90"
+                      >
+                        Adicionar Tarefa
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
+                    {selectedObjective.startDate && (
+                      <span>
+                        Início: {new Date(selectedObjective.startDate).toLocaleDateString("pt-BR")}
+                      </span>
+                    )}
+                    {selectedObjective.dueDate && (
+                      <span>
+                        Prazo: {new Date(selectedObjective.dueDate).toLocaleDateString("pt-BR")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-foreground">Tarefas vinculadas</h4>
+                  {selectedObjective.tasks.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">
+                      Nenhuma tarefa cadastrada para este objetivo.
+                    </p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {selectedObjective.tasks.map((task) => {
+                        const isDone = task.status === "CONCLUIDA";
+                        return (
+                          <li
+                            key={task.id}
+                            className="flex items-start justify-between gap-3 rounded-xl bg-background/40 px-3 py-2 transition-colors"
+                          >
+                            <div className="flex items-start gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleToggleTask(task)}
+                                disabled={!canUpdateTasks || updateTaskStatusMutation.isPending}
+                                className={cn(
+                                  "mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/70 bg-background/60 text-muted-foreground transition-colors",
+                                  isDone && "border-primary bg-primary text-primary-foreground",
+                                )}
+                                aria-label={
+                                  isDone ? "Marcar tarefa como pendente" : "Marcar tarefa como concluída"
+                                }
+                              >
+                                {isDone ? <CheckCircle2 className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
+                              </button>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <p
+                                    className={cn(
+                                      "text-xs font-medium text-foreground",
+                                      isDone && "line-through text-muted-foreground",
+                                    )}
+                                  >
+                                    {task.title}
+                                  </p>
+                                  <Badge variant="outline" className="text-[10px]">
+                                    {taskStatusLabels[task.status]}
+                                  </Badge>
+                                </div>
+                                {task.description && (
+                                  <p className="text-[11px] text-muted-foreground">{task.description}</p>
+                                )}
+                                {task.dueDate && (
+                                  <p className="text-[10px] text-muted-foreground">
+                                    Prazo: {new Date(task.dueDate).toLocaleDateString("pt-BR")}
+                                  </p>
+                                )}
+                                {task.comments && task.comments.length > 0 && (
+                                  <p className="text-[10px] text-muted-foreground">
+                                    Último comentário: {task.comments[task.comments.length - 1]?.comment}
+                                  </p>
+                                )}
                                 <button
                                   type="button"
-                                  onClick={() => handleToggleTask(task)}
-                                  disabled={!canUpdateTasks || updateTaskStatusMutation.isPending}
-                                  className={cn(
-                                    "mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/70 bg-background/60 text-muted-foreground transition-colors",
-                                    isDone && "border-primary bg-primary text-primary-foreground",
-                                  )}
-                                  aria-label={
-                                    isDone ? "Marcar tarefa como pendente" : "Marcar tarefa como concluída"
-                                  }
+                                  className="mt-1 text-[10px] text-primary underline-offset-2 hover:underline"
+                                  onClick={() => {
+                                    const comment = window.prompt("Adicionar comentário à tarefa:");
+                                    if (comment && comment.trim()) {
+                                      addCommentMutation.mutate({ taskId: task.id, comment: comment.trim() });
+                                    }
+                                  }}
                                 >
-                                  {isDone ? <CheckCircle2 className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
+                                  Adicionar comentário
                                 </button>
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    <p
-                                      className={cn(
-                                        "text-xs font-medium text-foreground",
-                                        isDone && "line-through text-muted-foreground",
-                                      )}
-                                    >
-                                      {task.title}
-                                    </p>
-                                    <Badge variant="outline" className="text-[10px]">
-                                      {taskStatusLabels[task.status]}
-                                    </Badge>
-                                  </div>
-                                  {task.description && (
-                                    <p className="text-[11px] text-muted-foreground">{task.description}</p>
-                                  )}
-                                  {task.dueDate && (
-                                    <p className="text-[10px] text-muted-foreground">
-                                      Prazo: {new Date(task.dueDate).toLocaleDateString("pt-BR")}
-                                    </p>
-                                  )}
-                                  {task.comments && task.comments.length > 0 && (
-                                    <p className="text-[10px] text-muted-foreground">
-                                      Último comentário: {task.comments[task.comments.length - 1]?.comment}
-                                    </p>
-                                  )}
-                                  <button
-                                    type="button"
-                                    className="mt-1 text-[10px] text-primary underline-offset-2 hover:underline"
-                                    onClick={() => {
-                                      const comment = window.prompt("Adicionar comentário à tarefa:");
-                                      if (comment && comment.trim()) {
-                                        addCommentMutation.mutate({ taskId: task.id, comment: comment.trim() });
-                                      }
-                                    }}
-                                  >
-                                    Adicionar comentário
-                                  </button>
-                                </div>
                               </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                    {updateTaskStatusMutation.isError && (
-                      <p className="mt-2 flex items-center gap-1 text-[11px] text-destructive">
-                        <AlertCircle className="h-3 w-3" /> Não foi possível atualizar a tarefa ou comentário. Tente novamente.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  {updateTaskStatusMutation.isError && (
+                    <p className="mt-2 flex items-center gap-1 text-[11px] text-destructive">
+                      <AlertCircle className="h-3 w-3" /> Não foi possível atualizar a tarefa ou comentário. Tente
+                      novamente.
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </section>

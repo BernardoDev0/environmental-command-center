@@ -36,6 +36,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RoleBasedRedirect from "./components/RoleBasedRedirect";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import CollaboratorDashboard from "./pages/dashboard/CollaboratorDashboard";
+import UsersPermissions from "./pages/admin/UsersPermissions";
+import RolesAndFunctions from "./pages/admin/RolesAndFunctions";
+import OrgStructure from "./pages/admin/OrgStructure";
+import SystemSettings from "./pages/admin/SystemSettings";
 
 const queryClient = new QueryClient();
 
@@ -202,6 +206,7 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/projetos/:id"
                 element={
@@ -215,6 +220,40 @@ const App = () => (
                 <Route path="requisitos" element={<ProjectRequirements />} />
                 <Route path="documentos" element={<ProjectDocuments />} />
               </Route>
+
+              {/* Administração */}
+              <Route
+                path="/administracao/usuarios"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <UsersPermissions />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/administracao/cargos-funcoes"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <RolesAndFunctions />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/administracao/estrutura-organizacional"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <OrgStructure />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/administracao/configuracoes"
+                element={
+                  <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
+                    <SystemSettings />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

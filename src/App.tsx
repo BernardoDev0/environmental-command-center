@@ -3,7 +3,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -26,6 +25,8 @@ import ProjectDocuments from "./pages/projects/ProjectDocuments";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleBasedRedirect from "./components/RoleBasedRedirect";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import CollaboratorDashboard from "./pages/dashboard/CollaboratorDashboard";
 
 const queryClient = new QueryClient();
 
@@ -48,15 +49,21 @@ const App = () => (
               {/* Redireciona automaticamente para o dashboard correto com base no papel */}
               <Route index element={<RoleBasedRedirect />} />
 
-              {/* Dashboard pessoal (rota compartilhada entre papéis, conteúdo pode variar) */}
-              <Route path="/dashboard" element={<Index />} />
-
-              {/* Dashboard administrativo - apenas ADMIN / OPERATIONS_MANAGER */}
+              {/* Dashboards dedicados por papel */}
               <Route
-                path="/dashboard/admin"
+                path="/admin/dashboard"
                 element={
                   <ProtectedRoute allowedRoles={["ADMIN", "OPERATIONS_MANAGER"]}>
-                    <Index />
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/colaborador/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["USER", "ADMIN", "OPERATIONS_MANAGER"]}>
+                    <CollaboratorDashboard />
                   </ProtectedRoute>
                 }
               />

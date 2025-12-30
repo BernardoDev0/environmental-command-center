@@ -17,10 +17,10 @@ const RoleBasedRedirect = () => {
   }
 
   if (user.role === "ADMIN" || user.role === "OPERATIONS_MANAGER") {
-    return <Navigate to="/dashboard/admin" replace />;
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
-  return <Navigate to="/dashboard" replace />;
+  return <Navigate to="/colaborador/dashboard" replace />;
 };
 
 export default RoleBasedRedirect;

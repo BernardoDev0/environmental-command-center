@@ -284,7 +284,7 @@ const CollaboratorGoals = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleToggleTask(task)}
-                                  disabled={!canUpdateTasks || updateTaskMutation.isPending}
+                                  disabled={!canUpdateTasks || updateTaskStatusMutation.isPending}
                                   className={cn(
                                     "mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/70 bg-background/60 text-muted-foreground transition-colors",
                                     isDone && "border-primary bg-primary text-primary-foreground",

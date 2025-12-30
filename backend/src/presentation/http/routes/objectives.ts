@@ -9,8 +9,10 @@ const router = Router();
 const createObjectiveSchema = z.object({
   title: z.string().trim().min(1, "Título é obrigatório").max(200),
   description: z.string().trim().max(2000).optional().or(z.literal("")),
+  priority: z.enum(["BAIXA", "MEDIA", "ALTA"]).optional(),
   startDate: z.string().datetime().optional(),
   dueDate: z.string().datetime().optional(),
+  employeeId: z.string().cuid().optional(),
 });
 
 const updateObjectiveSchema = createObjectiveSchema.partial().extend({
@@ -24,10 +26,7 @@ const createTaskSchema = z.object({
 });
 
 const updateTaskSchema = z.object({
-  title: z.string().trim().min(1).max(200).optional(),
-  description: z.string().trim().max(2000).optional().or(z.literal("")),
-  status: z.nativeEnum(TaskStatus).optional(),
-  dueDate: z.string().datetime().optional(),
+  status: z.nativeEnum(TaskStatus),
 });
 
 // Helper to resolve current user and related collaborator (by email)
@@ -164,6 +163,9 @@ router.patch("/objectives/:id", requireAuth(), async (req: AuthRequest, res) => 
       data: {
         ...("title" in parsed.data ? { title: parsed.data.title } : {}),
         ...("description" in parsed.data ? { description: parsed.data.description || null } : {}),
+        ...("priority" in parsed.data && parsed.data.priority
+          ? { priority: parsed.data.priority }
+          : {}),
         ...("status" in parsed.data ? { status: parsed.data.status } : {}),
         ...("startDate" in parsed.data
           ? { startDate: parsed.data.startDate ? new Date(parsed.data.startDate) : null }
@@ -256,21 +258,19 @@ router.patch("/tasks/:id", requireAuth(), async (req: AuthRequest, res) => {
       return res.status(401).json({ message: "Não autenticado" });
     }
 
-    const isAdminOrOps = user.role === Role.ADMIN || user.role === Role.OPERATIONS_MANAGER;
-
-    const isOwnerCollaborator = collaborator && collaborator.id === task.objective.employeeId;
+    const previousStatus = task.status;
 
     const parsed = updateTaskSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Dados inválidos", errors: parsed.error.flatten() });
     }
 
-    // Usuário colaborador só pode alterar o status (e opcionalmente marcar como concluída)
+    const isAdminOrOps = user.role === Role.ADMIN || user.role === Role.OPERATIONS_MANAGER;
+    const isOwnerCollaborator = collaborator && collaborator.id === task.objective.employeeId;
+
+    // Usuário colaborador só pode alterar o status da própria tarefa
     if (!isAdminOrOps) {
-      const allowedKeys = ["status"];
-      const keys = Object.keys(parsed.data);
-      const invalid = keys.some((k) => !allowedKeys.includes(k));
-      if (invalid || !isOwnerCollaborator) {
+      if (!isOwnerCollaborator) {
         return res.status(403).json({ message: "Acesso não autorizado" });
       }
     }
@@ -278,12 +278,20 @@ router.patch("/tasks/:id", requireAuth(), async (req: AuthRequest, res) => {
     const updated = await prisma.task.update({
       where: { id },
       data: {
-        ...("title" in parsed.data ? { title: parsed.data.title } : {}),
-        ...("description" in parsed.data ? { description: parsed.data.description || null } : {}),
-        ...("status" in parsed.data ? { status: parsed.data.status } : {}),
-        ...("dueDate" in parsed.data ? { dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null } : {}),
+        status: parsed.data.status,
       },
     });
+
+    if (previousStatus !== updated.status) {
+      await prisma.taskStatusChange.create({
+        data: {
+          taskId: updated.id,
+          previousStatus: previousStatus,
+          newStatus: updated.status,
+          changedByUserId: user.id,
+        },
+      });
+    }
 
     return res.json(updated);
   } catch (error) {

@@ -102,27 +102,37 @@ enum ObjectiveStatus {
   ATRASADO
 }
 
+enum ObjectivePriority {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
 enum TaskStatus {
   PENDENTE
   EM_ANDAMENTO
   CONCLUIDA
+  BLOQUEADA
 }
 
 model Objective {
-  id             String          @id @default(cuid())
-  employeeId     String
-  employee       Collaborator    @relation(fields: [employeeId], references: [id])
-  title          String
-  description    String?
-  status         ObjectiveStatus @default(PLANEJADO)
-  startDate      DateTime?
-  dueDate        DateTime?
-  createdByUserId String
-  createdBy      User            @relation(fields: [createdByUserId], references: [id])
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  tasks          Task[]
-  attachments    Attachment[]
+  id               String               @id @default(cuid())
+  employeeId       String
+  employee         Collaborator         @relation(fields: [employeeId], references: [id])
+  title            String
+  description      String?
+  priority         ObjectivePriority    @default(MEDIA)
+  status           ObjectiveStatus      @default(PLANEJADO)
+  startDate        DateTime?
+  dueDate          DateTime?
+  createdByUserId  String
+  createdBy        User                 @relation(fields: [createdByUserId], references: [id])
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  tasks            Task[]
+  attachments      Attachment[]
+  delayJustifications DelayJustification[]
+  statusChanges    ObjectiveStatusChange[]
 }
 
 model Task {
@@ -133,9 +143,12 @@ model Task {
   description String?
   status      TaskStatus  @default(PENDENTE)
   dueDate     DateTime?
+  orderIndex  Int         @default(0)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   attachments Attachment[]
+  comments    TaskComment[]
+  statusChanges TaskStatusChange[]
 }
 
 enum AttachmentRelatedType {
@@ -151,5 +164,47 @@ model Attachment {
   filePath    String
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  comment   String
+  createdAt DateTime @default(now())
+}
+
+model DelayJustification {
+  id               String     @id @default(cuid())
+  objectiveId      String
+  objective        Objective  @relation(fields: [objectiveId], references: [id])
+  justification    String
+  createdByUserId  String
+  createdBy        User       @relation(fields: [createdByUserId], references: [id])
+  createdAt        DateTime   @default(now())
+}
+
+model ObjectiveStatusChange {
+  id               String          @id @default(cuid())
+  objectiveId      String
+  objective        Objective       @relation(fields: [objectiveId], references: [id])
+  previousStatus   ObjectiveStatus
+  newStatus        ObjectiveStatus
+  changedByUserId  String
+  changedBy        User            @relation(fields: [changedByUserId], references: [id])
+  createdAt        DateTime        @default(now())
+}
+
+model TaskStatusChange {
+  id               String      @id @default(cuid())
+  taskId           String
+  task             Task        @relation(fields: [taskId], references: [id])
+  previousStatus   TaskStatus
+  newStatus        TaskStatus
+  changedByUserId  String
+  changedBy        User        @relation(fields: [changedByUserId], references: [id])
+  createdAt        DateTime    @default(now())
 }
 

@@ -39,7 +39,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
 
-  const [openSection, setOpenSection] = useState<"pessoas" | "operacoes" | null>(null);
+  const [openSection, setOpenSection] = useState<"pessoas" | "operacoes" | "compliance" | null>(null);
   const [isDark, setIsDark] = useState(true as boolean);
 
   const currentPath = location.pathname;
@@ -71,7 +71,7 @@ export function AppSidebar() {
   const isProjectsRoute = currentPath.startsWith("/projetos");
   const isInventoryRoute = currentPath === "/inventory";
   const isFinanceRoute = currentPath === "/finance";
-  const isComplianceRoute = currentPath === "/goals";
+  const isComplianceRoute = currentPath.startsWith("/compliance");
 
   const initialSection = useMemo<"pessoas" | "operacoes" | null>(() => {
     if (isProjectsRoute) return "operacoes";
@@ -311,11 +311,11 @@ export function AppSidebar() {
               )}
 
               {/* Compliance & ESG */}
-              {isAdminOrOps && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isComplianceRoute} tooltip="Compliance &amp; ESG">
+              <SidebarMenuItem>
+                <div className="flex items-center justify-between gap-1">
+                  <SidebarMenuButton asChild isActive={isComplianceRoute} className="flex-1" tooltip="Compliance &amp; ESG">
                     <NavLink
-                      to="/goals"
+                      to="/compliance/conformidade-legal"
                       className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                       activeClassName="font-semibold"
                     >
@@ -323,8 +323,73 @@ export function AppSidebar() {
                       {!collapsed && <span>Compliance &amp; ESG</span>}
                     </NavLink>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
+                  {!collapsed && (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setOpenSection((prev) => (prev === "compliance" ? null : "compliance"));
+                      }}
+                      className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      aria-label={openSection === "compliance" ? "Recolher Compliance & ESG" : "Expandir Compliance & ESG"}
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "h-3 w-3 transform text-sidebar-foreground/70 transition-transform duration-300 ease-out",
+                          openSection === "compliance" ? "rotate-180" : "rotate-0",
+                        )}
+                      />
+                    </button>
+                  )}
+                </div>
+                {!collapsed && openSection === "compliance" && (
+                  <SidebarMenuSub>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath === "/compliance/conformidade-legal"}
+                    >
+                      <NavLink to="/compliance/conformidade-legal" className="flex items-center gap-2">
+                        <span>Conformidade legal</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath === "/compliance/licencas-ambientais"}
+                    >
+                      <NavLink to="/compliance/licencas-ambientais" className="flex items-center gap-2">
+                        <span>Licenças ambientais</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath === "/compliance/indicadores-esg"}
+                    >
+                      <NavLink to="/compliance/indicadores-esg" className="flex items-center gap-2">
+                        <span>Indicadores ESG</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath === "/compliance/auditorias-nao-conformidades"}
+                    >
+                      <NavLink
+                        to="/compliance/auditorias-nao-conformidades"
+                        className="flex items-center gap-2"
+                      >
+                        <span>Auditorias &amp; não conformidades</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={currentPath === "/compliance/relatorios"}
+                    >
+                      <NavLink to="/compliance/relatorios" className="flex items-center gap-2">
+                        <span>Relatórios</span>
+                      </NavLink>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSub>
+                )}
+              </SidebarMenuItem>
 
               {/* Administração */}
               {isAdminOrOps && (

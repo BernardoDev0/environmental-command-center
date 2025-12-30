@@ -114,16 +114,18 @@ export function AppSidebar() {
     <Sidebar
       variant="floating"
       collapsible="icon"
-      className="border border-sidebar-border/60 bg-sidebar/95 shadow-lg shadow-black/40"
+      className="border border-sidebar-border/70 bg-sidebar shadow-[0_18px_45px_rgba(0,0,0,0.55)] transition-[width] duration-300 ease-in-out"
     >
-      <SidebarHeader className="flex items-center gap-3 px-4 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/90 shadow-md shadow-primary/40">
-          <div className="h-5 w-5 rounded-lg border border-primary-foreground/40 bg-background/80" />
+      <SidebarHeader className="flex items-center gap-3 px-5 py-5">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/90 shadow-md shadow-primary/40">
+          <div className="h-5 w-5 rounded-lg border border-primary-foreground/60 bg-background/90" />
         </div>
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="text-base font-semibold tracking-tight text-sidebar-foreground">Plataforma Ambiental</span>
-            <span className="text-xs text-sidebar-foreground/70">Painel de Operações</span>
+            <span className="text-[0.95rem] font-semibold tracking-tight text-sidebar-foreground">
+              Plataforma Ambiental
+            </span>
+            <span className="text-xs font-medium text-sidebar-foreground/70">Painel executivo</span>
           </div>
         )}
       </SidebarHeader>
@@ -131,15 +133,15 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1 text-[0.95rem] font-medium">
               {/* Dashboard */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isDashboardRoute} tooltip="Dashboard">
                   <NavLink
                     to={dashboardPath}
                     end
-                    className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                    activeClassName="font-semibold"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sidebar-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                    activeClassName="bg-sidebar-accent text-sidebar-accent-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
                   >
                     <LayoutGrid className="h-5 w-5" />
                     {!collapsed && <span>Dashboard</span>}
